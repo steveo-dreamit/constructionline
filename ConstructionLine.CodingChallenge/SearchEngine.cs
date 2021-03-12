@@ -6,16 +6,15 @@ using System.Threading.Tasks;
 namespace ConstructionLine.CodingChallenge
 {
     public class SearchEngine
-    {
-        private readonly List<Shirt> _shirts;
+    {        
         private readonly IDictionary<Guid, Shirt[]> _shirtSizes;
         private readonly IDictionary<Guid, Shirt[]> _shirtColors;
 
         public SearchEngine(List<Shirt> shirts)
         {
             // TODO: data preparation and initialisation of additional data structures to improve performance goes here.
-            _shirtSizes = shirts.GroupBy(x => x.Color.Id).ToDictionary(x => x.Key, x => x.ToArray());
-            _shirtColors = shirts.GroupBy(x => x.Size.Id).ToDictionary(x => x.Key, x => x.ToArray());
+            _shirtSizes = shirts.GroupBy(x => x.Size.Id).ToDictionary(x => x.Key, x => x.ToArray());
+            _shirtColors = shirts.GroupBy(x => x.Color.Id).ToDictionary(x => x.Key, x => x.ToArray());
         }
 
         public async System.Threading.Tasks.Task<SearchResults> SearchAsync(SearchOptions options)
@@ -25,15 +24,15 @@ namespace ConstructionLine.CodingChallenge
 
             var sizeSearch = await SearchBySize(options.Sizes.Select(x => x.Id).ToArray());
 
-            var imtermediateResults = colorSearch.Intersect(sizeSearch).ToArray();
+            var intermediateResults = colorSearch.Intersect(sizeSearch).ToArray();
 
-            var resultColor = await Colours(imtermediateResults);
+            var resultColor = await Colours(intermediateResults);
 
-            var resultSize = await Sizes(imtermediateResults);            
+            var resultSize = await Sizes(intermediateResults);            
 
             return new SearchResults
             {
-                Shirts = imtermediateResults.ToList(),
+                Shirts = intermediateResults.ToList(),
                 ColorCounts = resultColor,
                 SizeCounts = resultSize
             };
